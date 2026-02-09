@@ -3,16 +3,41 @@ Polymarket Trade Tracker - Bot Telegram complet
 - Surveille les wallets via data-api.polymarket.com
 - Résumé automatique toutes les 6h
 - Commande /add pour ajouter des wallets depuis Telegram
+- Serveur HTTP health check pour Render
 """
 import asyncio
 import os
 import json
+import threading
+from http.server import HTTPServer, BaseHTTPRequestHandler
 import requests
 from collections import defaultdict, Counter
 from datetime import datetime
 from telegram import Bot, Update
 from telegram.ext import Application, CommandHandler, ContextTypes
 from dotenv import load_dotenv
+
+
+# ==========================================
+# HEALTH CHECK SERVER (pour Render)
+# ==========================================
+class HealthHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header("Content-type", "text/plain")
+        self.end_headers()
+        self.wfile.write(b"Polymarket Bot is running")
+
+    def log_message(self, format, *args):
+        pass  # Pas de logs HTTP
+
+
+def start_health_server():
+    port = int(os.environ.get("PORT", 10000))
+    server = HTTPServer(("0.0.0.0", port), HealthHandler)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    print(f"Health check server on port {port}")
 
 load_dotenv()
 
@@ -426,4 +451,5 @@ async def main():
 
 if __name__ == "__main__":
     print("Démarrage du Polymarket Tracker...")
+    start_health_server()
     asyncio.run(main())
