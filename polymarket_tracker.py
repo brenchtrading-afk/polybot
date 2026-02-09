@@ -47,7 +47,7 @@ DEST_CHANNEL = os.getenv('TELEGRAM_CHAT_ID', '@poly_kitti_print')
 DATA_API = "https://data-api.polymarket.com"
 GAMMA_API = "https://gamma-api.polymarket.com"
 CHECK_INTERVAL = 30
-SUMMARY_INTERVAL_HOURS = 6
+SUMMARY_INTERVAL_HOURS = 1
 
 # Fichier pour stocker les wallets (persistant)
 WALLETS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'wallets.json')
